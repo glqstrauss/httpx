@@ -14,8 +14,17 @@ from uvicorn.main import Server
 
 from httpx import URL, AsyncioBackend
 
+backend_params = [pytest.param(AsyncioBackend, marks=pytest.mark.asyncio)]
 
-@pytest.fixture(params=[pytest.param(AsyncioBackend, marks=pytest.mark.asyncio)])
+try:
+    from httpx.concurrency.trio import TrioBackend
+except ImportError:  # pragma: no cover
+    pass
+else:
+    backend_params.append(pytest.param(TrioBackend, marks=pytest.mark.trio))
+
+
+@pytest.fixture(params=backend_params)
 def backend(request):
     backend_cls = request.param
     return backend_cls()
