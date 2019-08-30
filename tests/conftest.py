@@ -230,6 +230,7 @@ def prepare_httpbin_url(value: str) -> typing.Callable:
     def inner(*suffix: str) -> str:
         return urljoin(httpbin_url, "/".join(suffix))
 
+    inner.url = value.url
     return inner
 
 
@@ -241,3 +242,10 @@ def httpbin(httpbin):
 @pytest.fixture
 def httpbin_secure(httpbin_secure):
     return prepare_httpbin_url(httpbin_secure)
+
+
+@pytest.fixture
+def httpbin_ca_bundle():
+    from pytest_httpbin import certs
+
+    return certs.where()

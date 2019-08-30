@@ -25,14 +25,18 @@ class HTTPBasicAuth(AuthBase):
         return request
 
     def build_auth_header(self) -> str:
-        username, password = self.username, self.password
+        return build_basic_auth_header(self.username, self.password)
 
-        if isinstance(username, str):
-            username = username.encode("latin1")
 
-        if isinstance(password, str):
-            password = password.encode("latin1")
+def build_basic_auth_header(
+    username: typing.Union[str, bytes], password: typing.Union[str, bytes]
+) -> str:
+    if isinstance(username, str):
+        username = username.encode("latin1")
 
-        userpass = b":".join((username, password))
-        token = b64encode(userpass).decode().strip()
-        return f"Basic {token}"
+    if isinstance(password, str):
+        password = password.encode("latin1")
+
+    userpass = b":".join((username, password))
+    token = b64encode(userpass).decode().strip()
+    return f"Basic {token}"
